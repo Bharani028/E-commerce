@@ -1,0 +1,5 @@
+.card-img-top {
+    width: 100%;
+    height: 250px; /* Set a fixed height for consistency */
+    object-fit: cover; /* Ensures images fill the container without distortion */
+}
