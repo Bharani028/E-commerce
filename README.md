@@ -1,2 +1,5 @@
 # E-commerce
-Developed E-commerce website using PHP, HTML, CSS, Javascript, jQuery, AJAX, MySQL, and Bootstrap.
+Built an e-commerce site for online purchasing with product listings, cart
+management, and user authentication.
+Operating System : Windows
+Technology : PHP, HTML, CSS, JAVASCRIPT, jQuery, AJAX, MySQL, Bootstrap
