@@ -42,6 +42,42 @@ $delivery_date->modify('+4 days');
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+        <style>
+.cash-img{
+    width: 20%;
+}
+.delivery {
+    list-style-type: none;
+    padding: 0;
+}
+
+.delivery .del{
+    background-color: white;
+    font-weight: bold;
+    color: blue;
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%; /* Ensures that all cards have the same height */
+}
+
+.card-img-top {
+    width: 100%;
+    height: 55%; /* Fixed height for the images */
+    object-fit: cover; /* Keeps the aspect ratio of images and prevents stretching */
+}
+
+.card-body {
+    flex-grow: 1; /* Fills the remaining height of the card */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+    </style>
 </head>
 <body>
 
@@ -64,7 +100,9 @@ $delivery_date->modify('+4 days');
                 <p><strong>Price:</strong> ₹<?php echo htmlspecialchars($product['price']); ?></p>
                 <p><strong>Description:</strong> <?php echo nl2br(htmlspecialchars($product['description'])); ?></p>
                 <p><strong>Estimated Delivery Date:</strong> <?php echo $delivery_date->format('F j, Y'); ?></p> <!-- Display the calculated delivery date -->
-
+                    <ul class="delivery col-6">
+                        <li class="del">Cash on Delivery only<img src='../images/cash-delivery.png' class="cash-img"></li>
+                    </ul>
                 <!-- Form for adding to cart -->
                 <form action="add_to_cart.php" method="POST">
                     <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
@@ -88,7 +126,7 @@ $delivery_date->modify('+4 days');
                         <label for="custom-quantity-input">Enter Quantity (1-999):</label>
                         <input type="number" id="custom-quantity-input" name="custom_quantity" min="1" max="999" class="form-control">
                     </div>
-                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                    <button type="submit" class="btn btn-success">Add to Cart</button>
                 </form>
 
             </div>
@@ -100,13 +138,13 @@ $delivery_date->modify('+4 days');
             <?php if ($related_result->num_rows > 0): ?>
                 <div class="row">
                     <?php while ($related_product = $related_result->fetch_assoc()): ?>
-                        <div class="col-md-3">
+                        <div class="col-md-3 col-sm-6 col6" >
                             <div class="card mb-4">
                                 <img src="<?php echo htmlspecialchars($related_product['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($related_product['name']); ?>">
                                 <div class="card-body">
                                     <h5 class="card-title"><?php echo htmlspecialchars($related_product['name']); ?></h5>
                                     <p class="card-text">₹<?php echo htmlspecialchars($related_product['price']); ?></p>
-                                    <a href="product.php?id=<?php echo $related_product['id']; ?>" class="btn btn-primary">View Details</a>
+                                    <a href="product.php?id=<?php echo $related_product['id']; ?>" class="btn btn-success">View Details</a>
                                 </div>
                             </div>
                         </div>

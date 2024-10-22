@@ -1,0 +1,80 @@
+.cart-container {
+    background-color: #f5f5f5;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.cart-table {
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.cart-item {
+    border-bottom: 1px solid #ddd;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.cart-item img {
+    width: 120px;
+    height: auto;
+    margin-right: 20px;
+}
+
+.cart-item .item-details {
+    flex-grow: 1;
+}
+
+.cart-item .item-actions {
+    text-align: right;
+}
+
+.cart-item .item-actions button {
+    margin-left: 10px;
+}
+
+.cart-item .remove-link {
+    font-size: 0.9rem;
+    color: red;
+    cursor: pointer;
+}
+
+.cart-summary {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+.cart-summary h5 {
+    margin-bottom: 20px;
+}
+
+.cart-summary .total-price {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* Quantity buttons */
+.quantity-control {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.quantity-control input {
+    width: 60px;
+    text-align: center;
+}
+
+.quantity-control .btn {
+    font-size: 0.9rem;
+    padding: 5px;
+}

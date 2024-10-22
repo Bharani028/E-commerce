@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 include '../includes/db.php';
 
 // Initialize error message variable
@@ -68,9 +70,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: url('../images/loginbg.webp'); /* Add your background image */
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-control {
+            border-radius: 20px;
+        }
+        .btn-primary {
+            border-radius: 20px;
+        }
+        .alert {
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
+    <div class="login-container">
         <h2>Login</h2>
 
         <!-- Display error message if set -->
@@ -87,8 +121,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label for="password">Password:</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
-            <button type="submit" class="btn btn-primary">Login</button>
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+            <a href="forgot_password.php" class="d-block text-center mt-2">Forgot password?</a>
         </form>
+
+        <!-- Option to switch to register -->
+        <p class="mt-3 text-center">Don't have an account? <a href="register.php">Register here</a></p>
     </div>
 </body>
 </html>

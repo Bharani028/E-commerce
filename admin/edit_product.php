@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Check if a new image was uploaded
     if (!empty($_FILES['image']['name'])) {
-        $image = 'uploads/' . basename($_FILES['image']['name']);
+        $image = '../product/' . basename($_FILES['image']['name']);
         move_uploaded_file($_FILES['image']['tmp_name'], $image);
 
         // Update the product details with the new image

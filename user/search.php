@@ -2,17 +2,30 @@
 session_start();
 include '../includes/db.php';
 
-// Get search query from URL parameters
-$query = isset($_GET['query']) ? $conn->real_escape_string($_GET['query']) : '';
+// Get and trim the search query from URL parameters
+$query = isset($_GET['query']) ? trim($conn->real_escape_string($_GET['query'])) : '';
 $sort_order = isset($_GET['sort']) ? $_GET['sort'] : '';
+
+// Split query into words for improved search
+$words = explode(' ', $query);
 
 // Base SQL query to search products by name or category name
 $sql = "
     SELECT products.*, categories.name AS category_name 
     FROM products 
     JOIN categories ON products.category_id = categories.id 
-    WHERE (products.name LIKE '%$query%' OR categories.name LIKE '%$query%')
+    WHERE 1=1
 ";
+
+// Add conditions for each word
+if (!empty($query)) {
+    foreach ($words as $word) {
+        $word = trim($word); // Trim each word just in case
+        if (!empty($word)) {
+            $sql .= " AND (products.name LIKE '%$word%' OR categories.name LIKE '%$word%')";
+        }
+    }
+}
 
 // Modify SQL based on sorting option
 if ($sort_order == 'price_asc') {
@@ -32,6 +45,7 @@ if ($result->num_rows > 0) {
 
 $conn->close();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,28 +54,70 @@ $conn->close();
     <title>Search Results - My E-Commerce Site</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
+        .body {
+            background-color: #f4f4f4;
+            color: #333;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
         .card {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            height: 100%; /* Ensures that all cards have the same height */
+            height: 100%;
+            margin-bottom: 3px !important;
         }
-
         .card-img-top {
             width: 100%;
-            height: 55%; /* Fixed height for the images */
-            object-fit: cover; /* Keeps the aspect ratio of images and prevents stretching */
+            height: 55%;
+            object-fit: cover;
         }
-
         .card-body {
-            flex-grow: 1; /* Fills the remaining height of the card */
+            flex-grow: 1;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
+        .product-col {
+            flex-grow: 1;
+            flex-basis: calc(25% - 15px);
+            max-width: calc(25% - 15px);
+            min-height: 100%;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 767px) {
+            .fullbody {
+                height: 110%;
+            }
+            .product-col {
+                flex-basis: calc(50% - 10px);
+                max-width: calc(50% - 10px);
+                padding-left: 5px !important;
+                padding-right: 5px !important;
+                margin-bottom: 50px !important;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 991px) {
+            .product-col {
+                flex-basis: calc(33.33% - 10px);
+                max-width: calc(33.33% - 10px);
+                padding-left: 10px !important;
+                padding-right: 10px !important;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .product-col {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+        }
     </style>
 </head>
-<body>
+<body class="body">
 
     <?php 
         $is_logged_in = isset($_SESSION['user_id']);
@@ -89,14 +145,13 @@ $conn->close();
         <?php if (!empty($products)): ?>
             <div class="row">
                 <?php foreach ($products as $product): ?>
-                    <div class="col-md-4">
-                        <div class="card mb-4">
+                    <div class="col-md-3 col-sm-6 col-6 product-col">
+                        <div class="card fullbody mb-4">
                             <img src="<?php echo htmlspecialchars($product['image']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($product['name']); ?>">
                             <div class="card-body">
                                 <h5 class="card-title"><?php echo htmlspecialchars($product['name']); ?></h5>
                                 <p class="card-text">₹<?php echo htmlspecialchars($product['price']); ?></p>
-                                <p class="card-text"><small class="text-muted">Category: <?php echo htmlspecialchars($product['category_name']); ?></small></p>
-                                <a href="product.php?id=<?php echo $product['id']; ?>" class="btn btn-primary">View Details</a>
+                                <a href="product.php?id=<?php echo $product['id']; ?>" class="btn btn-success">View Details</a>
                             </div>
                         </div>
                     </div>

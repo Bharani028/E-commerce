@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $confirm_password = $conn->real_escape_string($_POST['confirm_password']);
 
     if ($password !== $confirm_password) {
-        echo "Passwords do not match!";
+        echo "<div class='alert alert-danger'>Passwords do not match!</div>";
     } else {
         // Hash the password
         $hashed_password = password_hash($password, PASSWORD_DEFAULT);
@@ -17,10 +17,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Insert the user into the database
         $sql = "INSERT INTO users (username, email, password) VALUES ('$username', '$email', '$hashed_password')";
         if ($conn->query($sql) === TRUE) {
-            echo "Registration successful!";
+            echo "<div class='alert alert-success'>Registration successful! You can now <a href='login.php'>login</a>.</div>";
             header("Location: login.php");
         } else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
+            echo "<div class='alert alert-danger'>Error: " . $sql . "<br>" . $conn->error . "</div>";
         }
     }
 
@@ -35,9 +35,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f5f5dc;
+        }
+        .registration-container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .btn-primary {
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
+    <div class="registration-container mt-5">
         <h2>Register</h2>
         <form action="register.php" method="POST">
             <div class="form-group">
@@ -57,6 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
             </div>
             <button type="submit" class="btn btn-primary">Register</button>
+            <p class="mt-3 text-center">Already have an account? <a href="login.php">Login here</a></p>
         </form>
     </div>
 </body>

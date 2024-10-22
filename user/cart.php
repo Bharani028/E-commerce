@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 include '../includes/db.php'; // Include your database connection
 
 $total_amount = 0;
@@ -32,24 +34,17 @@ if (isset($_SESSION['order_id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Cart</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/styles.css"> <!-- Add your own CSS for additional styling -->
-    <style>
-        /* Add custom styles here */
-        .cart-table th, .cart-table td {
-            text-align: center;
-        }
-        .cart-image {
-            width: 100px;
-            height: auto;
-        }
-    </style>
+    <link rel="stylesheet" href="css/cart.css"> <!-- Add your own CSS for additional styling -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 <body>
 
 <!-- Include the header here -->
 <?php include '../includes/header.php'; ?>
 
-<div class="container mt-5">
+<div class="container mt-5 cart-container">
     <?php
     // Check if the cart is empty
     if (!isset($_SESSION['cart']) || count($_SESSION['cart']) == 0) {
@@ -63,17 +58,7 @@ if (isset($_SESSION['order_id'])) {
             <p><strong>Expected Delivery Date:</strong> <?php echo htmlspecialchars($expected_delivery_date); ?></p>
         <?php endif; ?>
 
-        <table class="table cart-table table-bordered">
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Subtotal</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
+        <div class="cart-table">
             <?php
             // Loop through the cart and display the items
             foreach ($_SESSION['cart'] as $index => $cart_item) {
@@ -87,45 +72,36 @@ if (isset($_SESSION['order_id'])) {
                 $total_amount += $subtotal;
                 ?>
 
-                <tr>
-                    <td>
-                        <?php if (isset($cart_item['image']) && !empty($cart_item['image'])): ?>
-                            <img src="<?php echo htmlspecialchars($cart_item['image']); ?>" alt="<?php echo $product_name; ?>" class="cart-image">
-                        <?php else: ?>
-                            <img src="path/to/default-image.jpg" alt="Default Image" class="cart-image"> <!-- Optional default image -->
-                        <?php endif; ?>
-                        <div><?php echo $product_name; ?></div>
-                    </td>
-                    <td>₹<?php echo number_format($product_price, 2); ?></td>
-                    <td>
-                        <!-- Quantity Update Form -->
-                        <form action="update_cart.php" method="POST">
-                            <input type="number" name="quantity" value="<?php echo $product_quantity; ?>" min="1" max="999">
-                            <input type="hidden" name="product_id" value="<?php echo $cart_item['product_id']; ?>">
-                            <button type="submit" class="btn btn-sm btn-warning">Update</button>
-                        </form>
-                    </td>
-                    <td>₹<?php echo number_format($subtotal, 2); ?></td>
-                    <td>
-                        <!-- Remove from Cart Link -->
-                        <a href="remove_from_cart.php?product_id=<?php echo $cart_item['product_id']; ?>" class="btn btn-danger btn-sm">Remove</a>
-                    </td>
-                </tr>
+                <div class="cart-item">
+                    <img src="<?php echo htmlspecialchars($product_image); ?>" alt="<?php echo $product_name; ?>" class="img-fluid">
+                    <div class="item-details">
+                        <h5><?php echo $product_name; ?></h5>
+                        <p>Price: ₹<span class="product-price"><?php echo number_format($product_price, 2); ?></span></p>
+                        <p>Subtotal: ₹<span class="item-subtotal"><?php echo number_format($subtotal, 2); ?></span></p>
+                        <p class="remove-link" onclick="window.location.href='remove_from_cart.php?product_id=<?php echo $cart_item['product_id']; ?>'">Remove</p>
+                    </div>
+                    <div class="item-actions">
+                        <div class="quantity-control">
+                            <form action="update_cart.php" method="POST" class="d-inline">
+                                <input type="number" name="quantity" value="<?php echo $product_quantity; ?>" min="1" max="999" class="quantity-input" data-price="<?php echo $product_price; ?>" data-index="<?php echo $index; ?>">
+                                <input type="hidden" name="product_id" value="<?php echo $cart_item['product_id']; ?>">
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
                 <?php
             } // Closing the foreach loop
             ?>
 
-            <tr>
-                <td colspan="3" align="right"><strong>Total Amount:</strong></td>
-                <td colspan="2">₹<?php echo number_format($total_amount, 2); ?></td>
-            </tr>
+<div class="cart-summary">
+    <h5>Cart Summary</h5>
+    <p><strong>Total:</strong> ₹<span class="total-amount"><?php echo number_format($total_amount, 2); ?></span></p>
+    <a href="index.php" class="btn btn-primary">Continue Shopping</a>
+    <button class="btn btn-success" id="placeOrderButton">Place Order</button> <!-- Use a button with an ID -->
+</div>
 
-            </tbody>
-        </table>
-
-        <a href="index.php" class="btn btn-primary">Continue Shopping</a>
-        <a href="order_details.php" class="btn btn-success">Place Order</a> <!-- Redirects to order details page -->
+        </div>
         <?php
     }
     ?>
@@ -134,5 +110,49 @@ if (isset($_SESSION['order_id'])) {
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+     document.getElementById('placeOrderButton').addEventListener('click', function() {
+        let validOrder = true;
+
+        // Check if all quantities are valid (greater than 0)
+        document.querySelectorAll('.quantity-input').forEach(input => {
+            const quantity = parseInt(input.value);
+            if (isNaN(quantity) || quantity < 1) {
+                validOrder = false; // If any quantity is less than 1, set validOrder to false
+            }
+        });
+
+        if (!validOrder) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Invalid Quantity',
+                text: 'Please ensure that all quantities are at least 1 before placing your order.',
+                confirmButtonText: 'Okay'
+            });
+        } else {
+            // If all quantities are valid, redirect to order details page
+            window.location.href = 'order_details.php';
+        }
+    });
+    document.querySelectorAll('.quantity-input').forEach(input => {
+        input.addEventListener('input', function() {
+            const price = parseFloat(this.getAttribute('data-price'));
+            const quantity = parseInt(this.value) || 0; // Get the quantity or set to 0 if invalid
+            const subtotalElement = this.closest('.cart-item').querySelector('.item-subtotal');
+            const totalAmountElement = document.querySelector('.total-amount');
+
+            // Calculate new subtotal
+            const newSubtotal = price * quantity;
+            subtotalElement.textContent = newSubtotal.toFixed(2);
+
+            // Update total amount
+            let totalAmount = 0;
+            document.querySelectorAll('.item-subtotal').forEach(subtotal => {
+                totalAmount += parseFloat(subtotal.textContent);
+            });
+            totalAmountElement.textContent = totalAmount.toFixed(2);
+        });
+    });
+</script>
 </body>
 </html>

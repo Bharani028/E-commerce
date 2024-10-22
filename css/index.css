@@ -1,5 +1,112 @@
+.body {
+    background-color: #f4f4f4; /* Light grey background */
+    color: #333; /* Dark text color for better readability */
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Global and Responsive Styles */
+.card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    margin-bottom: 3px !important; /* Ensure gap between products */
+}
+
 .card-img-top {
     width: 100%;
-    height: 250px; /* Set a fixed height for consistency */
-    object-fit: cover; /* Ensures images fill the container without distortion */
+    height: 55%; 
+    object-fit: cover; 
+}
+
+.card-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Add flex-grow and flex-wrap for rows */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between; /* Distribute products evenly */
+}
+
+.product-col {
+    flex-grow: 1;
+    flex-basis: calc(25% - 15px); /* Ensures that 4 products fit in a row, adjust spacing */
+    max-width: calc(25% - 15px); /* Ensures that columns are max 25% width */
+    min-height: 100%; /* Ensure the column fills available height */
+    margin-bottom: 15px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 767px) {
+    .product-col {
+        flex-basis: calc(50% - 10px); /* 2 products per row on smaller screens */
+        max-width: calc(50% - 10px);
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .product-col {
+        flex-basis: calc(33.33% - 10px); /* 3 products per row on tablets */
+        max-width: calc(33.33% - 10px);
+    }
+}
+
+/* Mobile View (max-width: 767px) */
+@media (max-width: 767px) {
+    .card-img-top {
+        width: 100% !important;
+        height: 55%;
+        object-fit: cover; /* Keeps the aspect ratio of images and prevents stretching */
+    }
+    .fullbody {
+        height: 110%;
+    }
+    .row.no-gutters {
+        margin-left: 2px !important;
+        margin-right: 2px !important; /* Remove default row margins */
+    }
+    .product-col {
+        padding-left: 5px !important; /* Force padding for left */
+        padding-right: 5px !important; /* Force padding for right */
+        margin-bottom: 50px !important; /* Add space between products */
+    }
+    .container {
+        padding-left: 15px !important;
+        padding-right: 10px !important; /* Add padding between container and screen edge */
+    }
+    .container h1 {
+        font-size: 24px;
+    }
+    .container p {
+        font-size: 16px;
+    }
+}
+
+/* Tablet View (min-width: 768px and max-width: 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+    .product-col {
+        padding-left: 10px !important; /* Ensure padding on left */
+        padding-right: 10px !important; /* Ensure padding on right */
+    }
+    .container h1 {
+        font-size: 28px;
+    }
+    .container p {
+        font-size: 18px;
+    }
+}
+
+/* Default desktop and larger devices */
+@media (min-width: 992px) {
+    .product-col {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
 }
